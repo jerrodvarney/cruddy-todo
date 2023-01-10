@@ -22,7 +22,7 @@ exports.create = (text, callback) => {
     });
   };
 
-  var id = counter.getNextUniqueId( (err, id) => {
+  counter.getNextUniqueId( (err, id) => {
     if (err) {
       throw ('error creating a new ID');
     } else {
