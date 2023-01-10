@@ -32,24 +32,13 @@ exports.create = (text, callback) => {
 };
 
 exports.readAll = (callback) => {
-  ///// refactor to return an array of ToDos to client upon a GET to the collection /////
-  // read dataDir and build list of files //
-  // store each id from each file as well //
-  // send ToDo id as both id and text to the client for now //
-
-  /////AFTER ALL OTHER REFACTORS/////
-  // refactor test for readAll to expect correct ToDo text //
-  // read about promises to make all the async work together //
-  // use 'Promise.all' //
-
-  console.log('files: =========== ', fs.readdirSync(exports.dataDir));
-  //create file directory array
-  //remove .txt from each file name in the array
-
-  var data = _.map(items, (text, id) => {
-    return { id, text };
+  var files = fs.readdirSync(exports.dataDir);
+  var fileIds = _.map(files, (filename) => {
+    var id = filename.slice(0, 5);
+    return { id: id, text: id };
   });
-  callback(null, data);
+
+  callback(null, fileIds);
 };
 
 exports.readOne = (id, callback) => {
