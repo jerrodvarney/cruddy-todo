@@ -71,16 +71,44 @@ exports.update = (id, text, callback) => {
 };
 
 exports.delete = (id, callback) => {
-  ///// refactor to remove a ToDo from dataDir by its id /////
+  // define the filePath
+  // define allFiles
 
-  var item = items[id];
-  delete items[id];
-  if (!item) {
-    // report an error if item not found
-    callback(new Error(`No item with id: ${id}`));
+  // if filePath exists within all files
+    // use the unlink function to delete the file
+      // invoke the callback
+  // else
+    // invoke the callback with an error saying that no file exists to be deleted
+
+
+  var filePath = path.join(exports.dataDir, id + '.txt');
+  var allFiles = fs.readdirSync(exports.dataDir);
+
+  if (allFiles.includes(id + '.txt')) {
+    fs.unlink(filePath, (err) => {
+      if (err) {
+        callback(new Error('Error deleting file'));
+      } else {
+        callback();
+      }
+    });
   } else {
-    callback();
+    callback(new Error(`No item with id: ${id}`));
   }
+
+
+
+
+
+
+  // var item = items[id];
+  // delete items[id];
+  // if (!item) {
+  //   // report an error if item not found
+  //   callback(new Error(`No item with id: ${id}`));
+  // } else {
+  //   callback();
+  // }
 };
 
 // Config+Initialization code -- DO NOT MODIFY /////////////////////////////////
