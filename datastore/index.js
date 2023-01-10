@@ -42,8 +42,7 @@ exports.readAll = (callback) => {
 };
 
 exports.readOne = (id, callback) => {
-  var file = id + '.txt';
-  var filePath = path.join(exports.dataDir, file);
+  var filePath = path.join(exports.dataDir, id + '.txt');
 
   fs.readFile(filePath, (err, text) => {
     if (err) {
@@ -55,14 +54,19 @@ exports.readOne = (id, callback) => {
 };
 
 exports.update = (id, text, callback) => {
-  ///// refactor to rewrite the a stored ToDo based on its id /////
+  var filePath = path.join(exports.dataDir, id + '.txt');
+  var allFiles = fs.readdirSync(exports.dataDir);
 
-  var item = items[id];
-  if (!item) {
-    callback(new Error(`No item with id: ${id}`));
+  if (allFiles.includes(id + '.txt')) {
+    fs.writeFile(filePath, text, (err, text) => {
+      if (err) {
+        callback(new Error('Error updating file'));
+      } else {
+        callback(null, { id, text });
+      }
+    });
   } else {
-    items[id] = text;
-    callback(null, { id, text });
+    callback(new Error(`No item with id: ${id}`));
   }
 };
 
