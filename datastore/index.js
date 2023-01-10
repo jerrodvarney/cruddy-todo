@@ -40,7 +40,11 @@ exports.readAll = (callback) => {
   /////AFTER ALL OTHER REFACTORS/////
   // refactor test for readAll to expect correct ToDo text //
   // read about promises to make all the async work together //
-  // 'Promise.all' //
+  // use 'Promise.all' //
+
+  console.log('files: =========== ', fs.readdirSync(exports.dataDir));
+  //create file directory array
+  //remove .txt from each file name in the array
 
   var data = _.map(items, (text, id) => {
     return { id, text };
