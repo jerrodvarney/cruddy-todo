@@ -42,15 +42,16 @@ exports.readAll = (callback) => {
 };
 
 exports.readOne = (id, callback) => {
-  ///// refactor to read a single ToDo from dataDir based on its id /////
-  // must read contents of ToDo file and send it back to client //
+  var file = id + '.txt';
+  var filePath = path.join(exports.dataDir, file);
 
-  var text = items[id];
-  if (!text) {
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    callback(null, { id, text });
-  }
+  fs.readFile(filePath, (err, text) => {
+    if (err) {
+      callback(new Error(`No item with id: ${id}`));
+    } else {
+      callback(null, { id, text: text.toString() });
+    }
+  });
 };
 
 exports.update = (id, text, callback) => {
