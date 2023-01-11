@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const _ = require('underscore');
 const counter = require('./counter');
+const Promise = require('bluebird');
 
 var items = {};
 
@@ -31,16 +32,6 @@ exports.create = (text, callback) => {
   });
 };
 
-exports.readAll = (callback) => {
-  var files = fs.readdirSync(exports.dataDir);
-  var fileIds = _.map(files, (filename) => {
-    var id = filename.slice(0, 5);
-    return { id: id, text: id };
-  });
-
-  callback(null, fileIds);
-};
-
 exports.readOne = (id, callback) => {
   var filePath = path.join(exports.dataDir, id + '.txt');
 
@@ -53,12 +44,28 @@ exports.readOne = (id, callback) => {
   });
 };
 
+var readOne = Promise.promisify(exports.readOne);
+
+exports.readAll = (callback) => {
+
+  fs.readdir(exports.dataDir, (err, files) => {
+    var promises = _.map(files, (file) => {
+      var id = file.slice(0, 5);
+      return readOne(id);
+    });
+
+    Promise.all(promises)
+      .then(fileArr => callback(null, fileArr))
+      .catch(err => callback(err));
+  });
+};
+
 exports.update = (id, text, callback) => {
   var filePath = path.join(exports.dataDir, id + '.txt');
   var allFiles = fs.readdirSync(exports.dataDir);
 
   if (allFiles.includes(id + '.txt')) {
-    fs.writeFile(filePath, text, (err, text) => {
+    fs.writeFile(filePath, text, (err) => {
       if (err) {
         callback(new Error('Error updating file'));
       } else {
@@ -71,16 +78,6 @@ exports.update = (id, text, callback) => {
 };
 
 exports.delete = (id, callback) => {
-  // define the filePath
-  // define allFiles
-
-  // if filePath exists within all files
-    // use the unlink function to delete the file
-      // invoke the callback
-  // else
-    // invoke the callback with an error saying that no file exists to be deleted
-
-
   var filePath = path.join(exports.dataDir, id + '.txt');
   var allFiles = fs.readdirSync(exports.dataDir);
 
@@ -95,20 +92,6 @@ exports.delete = (id, callback) => {
   } else {
     callback(new Error(`No item with id: ${id}`));
   }
-
-
-
-
-
-
-  // var item = items[id];
-  // delete items[id];
-  // if (!item) {
-  //   // report an error if item not found
-  //   callback(new Error(`No item with id: ${id}`));
-  // } else {
-  //   callback();
-  // }
 };
 
 // Config+Initialization code -- DO NOT MODIFY /////////////////////////////////
